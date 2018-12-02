@@ -2,10 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
-
 fileWithIps = open("ipList.txt", "r")
-# Реализовать функцию загрузки файла
-# Проверка что файл существует
 
 
 def getIpList(file):
@@ -14,7 +11,7 @@ def getIpList(file):
     routers = []
     connections = []
     for line in file:
-        if line[0] == "0" and line[1] == ":":
+        if line[0:1] == "0" and line[1] == ":":
             nonZeroLine = line.split(":")
             nonZeroLine.pop(0)
             nonZeroLine = str(nonZeroLine)
@@ -79,32 +76,22 @@ def getIpList(file):
 
     return clients, servers, routers, connections
 
+
 def buildGraph(mainArray):
     pc = mpimg.imread('pc.png')
-    routers = mpimg.imread("rou.png")
+    router = mpimg.imread("router.jpg")
     server = mpimg.imread("server.png")
 
-    G = nx.Graph()
-
+    G = nx.Graph
     for router in range(len(mainArray[2])):
         routerIP = mainArray[2][router].split(".")
+        print(routerIP)
         for j in range(len(mainArray[0])):
             clientIP = mainArray[0][j].split(".")
             if clientIP[0] == routerIP[0] and clientIP[1] == routerIP[1] and clientIP[2] == routerIP[2]:
-                G.add_node(mainArray[2][router])
                 clientIPstr = ".".join(clientIP)
                 routerIPstr = ".".join(routerIP)
-                G.add_edge(clientIPstr, routerIPstr, image=pc, size=0.1)
-        for j in range(len(mainArray[1])):
-            serverIP = mainArray[1][j].split(".")
-            if serverIP[0] == routerIP[0] and serverIP[1] == routerIP[1] and serverIP[2] == routerIP[2]:
-                G.add_node(mainArray[2][router])
-                serverIPstr = ".".join(serverIP)
-                routerIPstr = ".".join(routerIP)
-                G.add_edge(serverIPstr, routerIPstr, image=server, size=0.1)
-
-    for connection in mainArray[3]:
-        G.add_edge(connection[0], connection[1], image=routers, size=0.2)
+                G.add_edge("192.168.11.10", "192.168.11.1", image=pc, size=0.1)
 
     pos = nx.spring_layout(G)
     nx.draw(G, pos, with_labels=True)
@@ -116,16 +103,16 @@ def buildGraph(mainArray):
     trans = ax.transData.transform
     trans2 = fig.transFigure.inverted().transform
     imsize = 0.2  # this is the image size
-    for (n1,n2) in G.edges():
-        (x1,y1) = pos[n1]
-        (x2,y2) = pos[n2]
-        (x,y) = (x1 * label_pos + x2 * (1.0 - label_pos),
-                 y1 * label_pos + y2 * (1.0 - label_pos))
-        xx,yy = trans((x,y)) # figure coordinates
-        xa,ya = trans2((xx,yy)) # axes coordinates
+    for (n1, n2) in G.edges():
+        (x1, y1) = pos[n1]
+        (x2, y2) = pos[n2]
+        (x, y) = (x1 * label_pos + x2 * (1.0 - label_pos),
+                  y1 * label_pos + y2 * (1.0 - label_pos))
+        xx, yy = trans((x, y))  # figure coordinates
+        xa, ya = trans2((xx, yy))  # axes coordinates
         imsize = G[n1][n2]['size']
-        img =  G[n1][n2]['image']
-        a = plt.axes([xa-imsize/2.0, ya-imsize/2.0, imsize, imsize ])
+        img = G[n1][n2]['image']
+        a = plt.axes([xa - imsize / 2.0, ya - imsize / 2.0, imsize, imsize])
         a.imshow(img)
         a.set_aspect('equal')
         a.axis('off')

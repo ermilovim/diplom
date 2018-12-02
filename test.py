@@ -9,6 +9,7 @@ from uuid import uuid4
 from flask import Flask, jsonify, request
 
 
+
 class Blockchain(object):
     def __init__(self):
         self.chain = []
@@ -173,6 +174,8 @@ class Blockchain(object):
             return False
 
 
+f = open("file.txt", "w")
+
 # Создаем экземпляр узла
 app = Flask(__name__)
 
@@ -230,11 +233,23 @@ def new_transaction():
 
 @app.route('/chain', methods=['GET'])
 def full_chain():
+    chainStr = str(blockchain.chain)
+    print(chainStr)
+    f.write(chainStr)
     response = {
         'chain': blockchain.chain,
         'length': len(blockchain.chain),
     }
     return jsonify(response), 200
+
+
+# @app.route('/write', methods=['GET'])
+# def write_chain():
+#     f.write(str(blockchain.chain))
+#     response = {
+#         'message': 'Chain have been written in file'
+#     }
+#     return jsonify(response), 200
 
 
 @app.route('/nodes/register', methods=['POST'])
