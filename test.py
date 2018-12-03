@@ -235,7 +235,9 @@ def new_transaction():
 def full_chain():
     chainStr = str(blockchain.chain)
     print(chainStr)
-    f.write(chainStr)
+    print(type(blockchain.chain))
+    with open("file.txt", "w") as f:
+        f.write(len(blockchain.chain), chainStr)
     response = {
         'chain': blockchain.chain,
         'length': len(blockchain.chain),
